@@ -47,8 +47,7 @@ func main() {
 			io.Copy(file, part)
 			fileNames = append(fileNames, part.FileName())
 		}
-		enc := json.NewEncoder(w)
-		enc.Encode(fileNames)
+		json.NewEncoder(w).Encode(fileNames)
 	})
 
 	m.Run()
