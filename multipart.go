@@ -20,25 +20,29 @@ func main() {
 	})
 
 	m.Post("/upload", func(w http.ResponseWriter, r *http.Request) {
-		key := "files[]"
-		// reader, err := r.MultipartReader() // stream
-		r.ParseMultipartForm(25)
-		for _, fileHeader := range r.MultipartForm.File[key] {
-			file, err := fileHeader.Open()
+		reader, err := r.MultipartReader()
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(500)
+			return
+		}
+
+		for {
+			part, err := reader.NextPart()
 			if err != nil {
-				fmt.Println(err)
-				w.WriteHeader(500)
-				return
+				break
 			}
-			defer file.Close()
-			img, err := os.Create(fileHeader.Filename)
+			defer part.Close()
+
+			img, err := os.Create(part.FileName())
 			if err != nil {
 				fmt.Println(err)
 				w.WriteHeader(500)
 				return
 			}
 			defer img.Close()
-			io.Copy(img, file)
+
+			io.Copy(img, part)
 		}
 	})
 
