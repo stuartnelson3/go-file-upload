@@ -36,15 +36,15 @@ func main() {
 			}
 			defer part.Close()
 
-			img, err := os.Create(part.FileName())
+			file, err := os.Create(part.FileName())
 			if err != nil {
 				fmt.Println(err)
 				w.WriteHeader(500)
 				return
 			}
-			defer img.Close()
+			defer file.Close()
 
-			io.Copy(img, part)
+			io.Copy(file, part)
 			fileNames = append(fileNames, part.FileName())
 		}
 		enc := json.NewEncoder(w)
