@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/render"
@@ -27,6 +28,7 @@ func main() {
 			return
 		}
 
+		var fileNames []string
 		for {
 			part, err := reader.NextPart()
 			if err != nil {
@@ -43,7 +45,10 @@ func main() {
 			defer img.Close()
 
 			io.Copy(img, part)
+			fileNames = append(fileNames, part.FileName())
 		}
+		enc := json.NewEncoder(w)
+		enc.Encode(fileNames)
 	})
 
 	m.Run()
